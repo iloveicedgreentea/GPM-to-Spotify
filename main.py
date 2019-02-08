@@ -140,4 +140,4 @@ def main():
 
 if __name__ == "__main__":
    main()
-   print("Finished\n Please check errored-tracks.log for missing tracks")
+   print("Finished\nPlease check errored-tracks.log for missing tracks")
