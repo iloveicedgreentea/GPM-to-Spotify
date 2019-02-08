@@ -1,0 +1,6 @@
+.vscode
+.env
+test.py
+.cache*
+*.log
+playlist_dump
