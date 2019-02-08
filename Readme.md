@@ -48,5 +48,7 @@ Feel free to open a GH issue
 
 ## Credits
 [gmusicapi](https://github.com/simon-weber/gmusicapi)
+
 [spotipy](https://github.com/plamere/spotipy)
+
 python-dotenv

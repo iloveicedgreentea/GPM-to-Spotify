@@ -110,11 +110,13 @@ def main():
                 # search by artist and title
                 search_result = spot.search_track(f'{artist} {title}')
                 logging.debug(search_result)
+                #todo: This search relies on the naming structure being similar. Can be improved with regex
                 track_uri = search_result.get('tracks').get('items')[0].get('uri')
                 logging.debug(track_uri)
 
                 # add to new playlist
                 logging.info(f'Adding {track_uri} to {name}')
+                #todo: speed could be improved with async
                 playlist_add = spot.add_to_playlist(new_playlist_id, [track_uri])
                 logging.info('Song added')
                 logging.debug(playlist_add)
