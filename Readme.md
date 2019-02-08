@@ -22,6 +22,7 @@ This runs locally and absolutely zero information is sent to me or anyone else. 
 
 ## Usage
 ```bash
+pipenv install
 pipenv run python3 main.py
 ```
 
@@ -31,6 +32,7 @@ pipenv run python3 main.py >main.log
 ```
 
 ## Known Issues
+Spotify doesn't care about unique playlist names. You can have duplicates so be aware if you run this multiple times.
 
 This will not transfer songs that were uploaded. Spotify does not offer cloud storage. Uploaded songs will be a line item in `errored-tracks.log` as the playlist name (since there is no song name to get)
 
