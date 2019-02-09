@@ -31,6 +31,19 @@ You may want to redirect output to a file. This spits out a ton of logs to stdou
 pipenv run python3 main.py >main.log
 ```
 
+### Transferring thumbs up to library
+GPM and Spotify have a similar way of storing favorite music but it requires a different way to process
+
+Heres a quick way to transfer it
+
+1) Play your thumbs up playlist
+2) Open the queue, save queue to a playlist
+3) Note the name you gave it, enter it below
+
+```bash
+pipenv run thumbs_up.py [name of thumbs up playlist]
+```
+
 ## Known Issues
 Spotify doesn't care about unique playlist names. You can have duplicates so be aware if you run this multiple times.
 

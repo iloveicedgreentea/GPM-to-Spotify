@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from os import getenv
 import logging
 import json
-from sys import exit
+from sys import exit, argv
 
 
 # env
@@ -14,17 +14,17 @@ def load_env():
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(lineno)d -- %(message)s")
 
+playlist_name = argv[1]
 
 #################
 # spotify
 #################
 class Spotify_client:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, scope='playlist-modify-private', *args, **kwargs):
         client_id = getenv('SPOTIFY_client_id')
         client_secret = getenv('SPOTIFY_client_secret')
         self.username = getenv('SPOTIFY_username')
         redirect_uri = getenv('SPOTIFY_redirect_uri')
-        scope = 'playlist-modify-private'
 
         # login
         logging.info("Starting Spotify client")
@@ -80,62 +80,60 @@ def main():
     logging.debug('loading GPM')
     gpm = GPM_client()
 
-    # initialize spotify
-    logging.debug('loading Spotify')
-    spot = Spotify_client()
-
-    # Get a full dump of all playlists as a massive list of dicts
-    logging.info('Getting all GPM playlists')
+    # Get a dump of the playlist
+    logging.info(f'Getting {playlist_name}')
     full_playlist_list = gpm.gpm_client.get_all_user_playlist_contents()
 
     for playlist in full_playlist_list:
 
         # create the new playlists GPM->Spotify
-        logging.info('Making new playlists...')
+        logging.info(f'Looking for {playlist_name}')
         name = playlist.get('name')
-        new_playlist_id = spot.create_playlist(name).get('id')
-        logging.info(f'Playlist created: {name} -- ID: {new_playlist_id}')
 
+        if playlist_name in name:
+            
+            # search and add the track into new album
+            logging.info(f'Adding tracks to {name}')
+            # need to modify the scope
+            spot = Spotify_client(scope='user-library-modify')
 
-        # search and add the track into new album
-        logging.info(f'Adding tracks to {name}')
-        
-        for track in playlist.get('tracks'):
-            try:
-                track_data = track.get('track')
-                artist = track_data.get('artist')
-                title = track_data.get('title')
-                logging.info(f'Searching {artist} {title}')
+            for track in playlist.get('tracks'):
+                try:
+                    track_data = track.get('track')
+                    artist = track_data.get('artist')
+                    title = track_data.get('title')
+                    logging.info(f'Searching {artist} {title}')
 
-                # search by artist and title
-                search_result = spot.search_track(f'{artist} {title}')
-                logging.debug(search_result)
-                #todo: This search relies on the naming structure being similar. Can be improved with regex
-                track_uri = search_result.get('tracks').get('items')[0].get('uri')
-                logging.debug(track_uri)
+                    # search by artist and title
+                    search_result = spot.search_track(f'{artist} {title}')
+                    logging.debug(search_result)
+                    #todo: This search relies on the naming structure being similar. Can be improved with regex
+                    track_uri = search_result.get('tracks').get('items')[0].get('uri')
+                    logging.debug(track_uri)
 
-                # add to new playlist
-                logging.info(f'Adding {track_uri} to {name}')
-                #todo: speed could be improved with async
-                playlist_add = spot.add_to_playlist(new_playlist_id, [track_uri])
-                logging.info('Song added')
-                logging.debug(playlist_add)
+                    # add to new playlist
+                    logging.info(f'Adding {track_uri} to {name}')
+                    #todo: speed could be improved with async
+                    playlist_add = spot.sp_client.current_user_saved_tracks_add([track_uri])
+                    logging.info('Song added')
+                    logging.debug(playlist_add)
 
-            # thrown when 'tracks' is missing    
-            except AttributeError:
-                logging.info("This track does not have metadata - probably uploaded. Skipping")
-                with open('./errored-tracks.log', 'a') as file:
-                    file.writelines(f'playist: {name}\n')
-            # cheap way to fix this, almost certainly means the track doesn't exist on spotify
-            except IndexError:
-                logging.info("Index out of range: This track may not exist or was not found. Skipping")
-                with open('./errored-tracks.log', 'a') as file:
-                    file.writelines(f'playist: {name} -- {artist} - {title}\n')
-            # cheap fix for random 500 errors
-            except client.SpotifyException:
-                logging.info("500 error - failed track written to log. It might have been added anyway, check later")
-                with open('./errored-tracks.log', 'a') as file:
-                    file.writelines(f'playist: {name} -- {artist} - {title}\n')
+                # thrown when 'tracks' is missing    
+                except AttributeError as e:
+                    logging.info(e)
+                    logging.info("This track does not have metadata - probably uploaded. Skipping")
+                    with open('./errored-tracks_thumbs-up.log', 'a') as file:
+                        file.writelines(f'playist: {name}\n')
+                # cheap way to fix this, almost certainly means the track doesn't exist on spotify
+                except IndexError:
+                    logging.info("Index out of range: This track may not exist or was not found. Skipping")
+                    with open('./errored-tracks_thumbs-up.log', 'a') as file:
+                        file.writelines(f'playist: {name} -- {artist} - {title}\n')
+                # cheap fix for random 500 errors
+                except client.SpotifyException:
+                    logging.info("500 error - failed track written to log. It might have been added anyway, check later")
+                    with open('./errored-tracks_thumbs-up.log', 'a') as file:
+                        file.writelines(f'playist: {name} -- {artist} - {title}\n')
 
 
 if __name__ == "__main__":
