@@ -41,7 +41,7 @@ Heres a quick way to transfer it
 3) Note the name you gave it, enter it below
 
 ```bash
-pipenv run thumbs_up.py [name of thumbs up playlist]
+pipenv run python3 thumbs_up.py [name of thumbs up playlist]
 ```
 
 ## Known Issues
