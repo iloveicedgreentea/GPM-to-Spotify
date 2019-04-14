@@ -53,7 +53,7 @@ class GPM_client:
         self.gpm_client = Mobileclient()
 
         # login
-        if not self.gpm_client.is_authenticated():
+        if self.gpm_client.is_authenticated():
             logging.info("Logging you in...")
             self.gpm_client.oauth_login(device_id=Mobileclient.FROM_MAC_ADDRESS)
         else:
