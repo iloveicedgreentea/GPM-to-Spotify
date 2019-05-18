@@ -15,7 +15,7 @@ This runs locally and absolutely zero information is sent to me or anyone else. 
 * A GPM and Spotify account
 
 ## Setup
-1) Go to the [developer page](developer.spotify.com/dashboard/), make an app/client_id. Add your redirect URL as `http://localhost/`
+1) Go to the [developer page](https://developer.spotify.com/dashboard/), make an app/client_id. Add your redirect URL as `http://localhost/`
 2) `mv .env.example .env`
 3) Populate .env with client_id, secret, redirect url, and username (found when you login online)
 
@@ -41,7 +41,7 @@ Heres a quick way to transfer it
 3) Note the name you gave it, enter it below
 
 ```bash
-pipenv run thumbs_up.py [name of thumbs up playlist]
+pipenv run python3 thumbs_up.py [name of thumbs up playlist]
 ```
 
 ## Known Issues
