@@ -10,8 +10,8 @@ This runs locally and absolutely zero information is sent to me or anyone else. 
 
 ## Requirements
 
-* Python 3.7 (It's 2019)
-* Pipenv (It's 2019! Stop using pip)
+* Python 3.7
+* Pipenv
 * A GPM and Spotify account
 
 ## Setup
@@ -32,9 +32,9 @@ pipenv run python3 main.py >main.log
 ```
 
 ### Transferring thumbs up to library
-GPM and Spotify have a similar way of storing favorite music but it requires a different way to process
+GPM and Spotify have a similar way of storing "liked" music but it requires a different way to process it.
 
-Heres a quick way to transfer it
+Heres a quick way to transfer it:
 
 1) Play your thumbs up playlist
 2) Open the queue, save queue to a playlist
@@ -53,13 +53,14 @@ If songs are missing, it's likely they don't exist on Spotify. Its also possible
 
 Spotify seems to give random 500s, can't do much about it. Seems to be rare. The script will write the failed tracks to `errored-tracks.log`
 
-You might hit a rate limit. I tried on a premium account with thousands of songs and was okay though.
+You might hit a rate limit. I tried on a premium account with thousands of songs and was okay.
 
-There might be issues with GPM and playlists with over 1k songs. Not tested
+There might be issues with GPM and playlists with over 1k songs. This has not been tested
+
+Some improvements could be made such as combining the two main python files, adding flags, etc but this would take more time than it is worth considering I needed to transfer some songs once.
 
 
-
-Feel free to open a GH issue
+Feel free to fork and/or open a GH issue
 
 ## Credits
 [gmusicapi](https://github.com/simon-weber/gmusicapi)
