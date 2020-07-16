@@ -4,3 +4,5 @@ test.py
 .cache*
 *.log
 playlist_dump
+.gpmtoken
+.vs/

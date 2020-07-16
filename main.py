@@ -42,7 +42,7 @@ class Spotify_client:
     def add_to_playlist(self, playlist_id, track_ids):
         logging.debug(f'playlist_id: {playlist_id}, track_ids: {track_ids}')
         return self.sp_client.user_playlist_add_tracks(self.username, playlist_id, track_ids)
-  
+
 
 #################
 # GPM
@@ -53,19 +53,17 @@ class GPM_client:
         self.gpm_client = Mobileclient()
 
         # login
-        if self.gpm_client.is_authenticated():
+        while not self.gpm_client.is_authenticated():
             logging.info("Logging you in...")
-            self.gpm_client.oauth_login(device_id=Mobileclient.FROM_MAC_ADDRESS)
-        else:
-            logging.debug("No previous credentials - performing Oauth")
-            self.gpm_client.perform_oauth(open_browser=True)
-   
+            if not self.gpm_client.oauth_login(device_id=Mobileclient.FROM_MAC_ADDRESS, oauth_credentials='./.gpmtoken'):
+            	logging.debug("No previous credentials - performing Oauth")
+            	self.gpm_client.perform_oauth(open_browser=True, storage_filepath='./.gpmtoken')
 
 #################
 # Common
 #################
 def main():
-    
+
     '''
     Playlists data structure is a list of dicts - each playlist, "name" field for playlist name and "tracks" list for all tracks
     Tracks is a list, each with a track ID
@@ -84,6 +82,9 @@ def main():
     logging.debug('loading Spotify')
     spot = Spotify_client()
 
+    # Get a full dump of all songs in library
+    library = gpm.gpm_client.get_all_songs()
+
     # Get a full dump of all playlists as a massive list of dicts
     logging.info('Getting all GPM playlists')
     full_playlist_list = gpm.gpm_client.get_all_user_playlist_contents()
@@ -99,10 +100,14 @@ def main():
 
         # search and add the track into new album
         logging.info(f'Adding tracks to {name}')
-        
+
         for track in playlist.get('tracks'):
+            artist = None
+            title = None
             try:
                 track_data = track.get('track')
+                if not track_data:
+                	track_data = [item for item in library if item['id'] == track['trackId']][0]
                 artist = track_data.get('artist')
                 title = track_data.get('title')
                 logging.info(f'Searching {artist} {title}')
@@ -121,21 +126,33 @@ def main():
                 logging.info('Song added')
                 logging.debug(playlist_add)
 
-            # thrown when 'tracks' is missing    
+            # thrown when 'tracks' is missing
             except AttributeError:
                 logging.info("This track does not have metadata - probably uploaded. Skipping")
-                with open('./errored-tracks.log', 'a') as file:
-                    file.writelines(f'playist: {name}\n')
+                try:
+                    with open('./errored-tracks.log', 'a') as file:
+                        file.writelines(f'playlist: {name}\n\n')
+                except:
+                    logging.info("Error writing playlist to errored list.  It most likely has special characters.")
+                    pass
             # cheap way to fix this, almost certainly means the track doesn't exist on spotify
             except IndexError:
                 logging.info("Index out of range: This track may not exist or was not found. Skipping")
-                with open('./errored-tracks.log', 'a') as file:
-                    file.writelines(f'playist: {name} -- {artist} - {title}\n')
+                try:
+                    with open('./errored-tracks.log', 'a') as file:
+                        file.writelines(f'playlist: {name}\nartist: {artist}\ntitle: {title}\n\n')
+                except:
+                    logging.info("Error writing track to errored list.  It most likely has special characters.")
+                    pass
             # cheap fix for random 500 errors
             except client.SpotifyException:
                 logging.info("500 error - failed track written to log. It might have been added anyway, check later")
-                with open('./errored-tracks.log', 'a') as file:
-                    file.writelines(f'playist: {name} -- {artist} - {title}\n')
+                try:
+                    with open('./errored-tracks.log', 'a') as file:
+                        file.writelines(f'playlist: {name}\nartist: {artist}\ntitle: {title}\n\n')
+                except:
+                    logging.info("Error writing track to errored list.  It most likely has special characters.")
+                    pass
 
 
 if __name__ == "__main__":
