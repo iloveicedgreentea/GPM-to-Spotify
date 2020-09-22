@@ -51,15 +51,12 @@ class GPM_client:
     def __init__(self):
         logging.info("Starting GPM client")
         self.gpm_client = Mobileclient()
-
         # login
-        if self.gpm_client.is_authenticated():
+        while not self.gpm_client.is_authenticated():
             logging.info("Logging you in...")
-            self.gpm_client.oauth_login(device_id=Mobileclient.FROM_MAC_ADDRESS)
-        else:
-            logging.debug("No previous credentials - performing Oauth")
-            self.gpm_client.perform_oauth(open_browser=True)
-   
+            if not self.gpm_client.oauth_login(device_id=Mobileclient.FROM_MAC_ADDRESS, oauth_credentials='./.gpmtoken'):
+              logging.debug("No previous credentials - performing Oauth")
+              self.gpm_client.perform_oauth(open_browser=True, storage_filepath='./.gpmtoken') 
 
 #################
 # Common
