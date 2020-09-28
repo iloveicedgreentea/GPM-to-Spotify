@@ -44,6 +44,15 @@ Heres a quick way to transfer it:
 pipenv run python3 thumbs_up.py [name of thumbs up playlist]
 ```
 
+### Albums
+
+```bash
+pipenv run python3 albums.py
+```
+
+## Todo
+When I have time I will make this a single executable and rewrite things with reusable classes, also will get rid of pipenv because the devs cannot improve its slow speed.
+
 ## Known Issues
 Spotify doesn't care about unique playlist names. You can have duplicates so be aware if you run this multiple times.
 
@@ -57,12 +66,9 @@ You might hit a rate limit. I tried on a premium account with thousands of songs
 
 There might be issues with GPM and playlists with over 1k songs. This has not been tested
 
-Some improvements could be made such as combining the two main python files, adding flags, etc but this would take more time than it is worth considering I needed to transfer some songs once.
-
-
 Feel free to fork and/or open a GH issue
 
-## Credits
+## Thanks
 [gmusicapi](https://github.com/simon-weber/gmusicapi)
 
 [spotipy](https://github.com/plamere/spotipy)
