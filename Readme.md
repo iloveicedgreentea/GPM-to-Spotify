@@ -1,5 +1,7 @@
 # Google Play Music to Spotify Playlist Transfer Tool Ultimate 3000 Edition
 
+2021 Update: SongShift is now available and mostly free and very good so I recommend using that instead. This repo is no longer maintained. 
+
 This Python script will transfer your GPM playlists to Spotify. I wrote this for three main reasons:
 
 1) I was moving to Spotify and there was no way I would transfer 4000 songs by hand
